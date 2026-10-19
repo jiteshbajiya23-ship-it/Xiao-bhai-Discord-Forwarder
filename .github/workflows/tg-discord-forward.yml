@@ -1,28 +1,21 @@
-name: Telegram → Discord Forwarder
+name: Telegram to Discord Forwarder
+
 on:
   schedule:
     - cron: '*/5 * * * *'
   workflow_dispatch:
-
-permissions:
-  contents: write
 
 jobs:
   forward:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install requests
+
+      - name: Setup Python
         run: pip3 install requests
-      - name: Forward posts
+
+      - name: Forward Telegram to Discord
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python3 forward.py
-      - name: Save state
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add .offset 2>/dev/null || true
-          git commit -m "update offset" 2>/dev/null || true
-          git push
