@@ -8,8 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: pip3 install requests
-      - env:
+      - name: Install requests
+        run: pip3 install requests
+      - name: Forward posts
+        env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python3 forward.py
+      - name: Save state
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add .offset 2>/dev/null || true
+          git commit -m "update offset" 2>/dev/null || true
+          git push
